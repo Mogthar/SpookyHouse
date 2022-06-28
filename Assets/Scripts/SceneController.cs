@@ -8,6 +8,22 @@ public class SceneController : MonoBehaviour
     private GameObject _enemy;
     // Start is called before the first frame update
 
+    private float sliderValue;
+    void Awake()
+    {
+      Messenger<float>.AddListener(GameEvent.SPEED_CHANGED, OnSpeedChanged);
+    }
+
+    void Start()
+    {
+      sliderValue = PlayerPrefs.GetFloat("speed", 1);
+    }
+
+    void OnDestroy()
+    {
+      Messenger<float>.RemoveListener(GameEvent.SPEED_CHANGED, OnSpeedChanged);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -17,6 +33,12 @@ public class SceneController : MonoBehaviour
           _enemy.transform.position = new Vector3(0,1,0);
           float angle = Random.Range(0, 360);
           _enemy.transform.Rotate(0,angle,0);
+          _enemy.GetComponent<WanderingAI>().OnSpeedChanged(sliderValue);
         }
+    }
+
+    private void OnSpeedChanged(float value)
+    {
+      sliderValue =  value;
     }
 }
